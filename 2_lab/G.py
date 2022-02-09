@@ -28,9 +28,9 @@ k = 0
 
 for key_demon in demons.keys():
   if key_demon in hunters:
-    if hunters[key_demon] - demons[key_demon] < 0:
-      k += 1
+    if hunters[key_demon] < demons[key_demon]:
+      k += demons[key_demon] - hunters[key_demon]
   else:
-    k += 1
+    k += demons[key_demon]
 
 print(f'Demons left: {k}')
