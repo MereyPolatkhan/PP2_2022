@@ -1,3 +1,5 @@
+from movie import movies 
+
 def category(categ):
     a = []
     for movie in movies:

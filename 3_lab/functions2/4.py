@@ -1,3 +1,5 @@
+from movie import movies
+
 def average_imdb(mov):
     sum = 0
     for movie in mov:

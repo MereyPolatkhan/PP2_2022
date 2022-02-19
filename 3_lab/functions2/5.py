@@ -1,3 +1,5 @@
+from movie import movies
+
 def average_of_category(s):
     sum = 0
     k = 0
