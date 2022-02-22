@@ -1,12 +1,13 @@
-arr = []
-n = int(input())
-for i in range(n): 
-    d = dict() 
-    name = input() 
-    imdb = int(input())
-    category = input() 
-    d = {"name": name, "imdb": imdb, "category": category}
-    arr.append(d)
+def factorial(n):
+    k = 1
+    for i in range(1, n + 1):
+        k = k * i
+    return k  
 
-for i in arr:
-    print(i)
+def combination(all, a):
+    res = float(factorial(all)) / float((factorial(a) * factorial(all-a))) 
+    return res
+
+res = 0.6 * 0.4 * 0.4  * 3
+
+print(round(res, 4))
