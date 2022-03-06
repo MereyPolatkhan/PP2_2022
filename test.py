@@ -8,6 +8,12 @@ def combination(all, a):
     res = float(factorial(all)) / float((factorial(a) * factorial(all-a))) 
     return res
 
-res = 0.6 * 0.4 * 0.4  * 3
 
-print(round(res, 4))
+
+first = combination(3, 2) * 0.5 * 0.5 * 0.5 + combination(3,3) * (0.5 ** 3)
+print(first)
+
+second = combination(2, 1) * (0.5 ** 2) + combination(2, 0) * (0.5 ** 2)
+print(second)
+
+print(combination(10, 3) * (0.4 ** 3) * (0.6 ** 7))
