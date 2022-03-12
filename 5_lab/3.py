@@ -9,3 +9,10 @@ def func(text):
 
 s = input() 
 func(s)
+
+
+def func2(text):
+    x = re.findall("[a-z]+_[a-z]+", text)
+    print(x)
+
+func2(s)
