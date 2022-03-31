@@ -41,17 +41,3 @@
 
 
 # local_laplace()
-
-
-
-
-n = int(input())
-def even(x):
-    for i in range(x):
-        if i % 2 == 0: 
-            yield str(i) + ','
-
-
-a = ' '.join(list(even(n)))
-print(a)
-print(a[0:len(a)-1])
