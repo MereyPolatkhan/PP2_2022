@@ -18,7 +18,15 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)    
+YELLOW = (255, 255, 0)
+
+def colors(color):
+    if color == WHITE: return 'WHITE'
+    if color == BLACK: return 'BLACK'
+    if color == RED: return 'RED'
+    if color == GREEN: return 'GREEN'
+    if color == BLUE: return 'BLUE'
+    
 
 color = WHITE
 radius = 5
@@ -162,6 +170,13 @@ while run:
                 r = calculateRect(rect_prevX, rect_prevY, rect_currentX, rect_currentY)
                 pygame.draw.circle(screen, color, (rect_currentX, rect_currentY), radius * 10, radius)
         #---------------------------------------------------
+    
+    # font ----------------------------
+    font = pygame.font.SysFont("comicsansms", 20)
+    
+    text = font.render(f'color: {colors(color)} || radius: {radius} || mode: {mode}', True, WHITE)
+    screen.blit(text, (10, 10))
+    #---------------------------------
     
     pygame.display.update(0, 0, 640, 20)
     
