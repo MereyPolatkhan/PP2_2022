@@ -31,6 +31,7 @@ def colors(color):
 color = WHITE
 radius = 5
 mode = ""
+font = pygame.font.SysFont("comicsansms", 20)
 
 pen_prevX = 0
 pen_prevY = 0
@@ -172,7 +173,6 @@ while run:
         #---------------------------------------------------
     
     # font ----------------------------
-    font = pygame.font.SysFont("comicsansms", 20)
     
     text = font.render(f'color: {colors(color)} || radius: {radius} || mode: {mode}', True, WHITE)
     screen.blit(text, (10, 10))
