@@ -1,6 +1,5 @@
 import pygame
 import random
-import time
 
 pygame.init()
 
@@ -14,31 +13,12 @@ WHITE_2 = (100, 100, 100)
 BLUE = (0, 0, 200)
 GREEN = (0, 150, 0)
 RED = (150, 0, 0)
-YELLOW = (255, 255, 0)
-
 
 BLOCK_SIZE = 20
 
 clock = pygame.time.Clock()
-FPS = 10
+FPS = 3
 
-def game_over():
-  time.sleep(0.5)
-  screen.fill(YELLOW)
-  font = pygame.font.SysFont("comicsansms", 40)
-  text = font.render('Game Over', True, GREEN)
-  screen.blit(text, (WINDOW_WIDTH // 2 - 100, WINDOW_HEIGHT // 2 - 200))
-
-  font2 = pygame.font.SysFont("comicsansms", 30)
-  text2 = font2.render(f'Score: {score} || Level: {lvl(level)}', True, GREEN)
-  screen.blit(text2, (WINDOW_WIDTH // 2 - 150, WINDOW_HEIGHT // 2 - 150))
-  pygame.display.update()
-  time.sleep(3)
-
-def lvl(n):
-  if n == 0: return "Easy"
-  elif n == 1: return "Medium"
-  else: return "Hard"
 
 def draw_grid():
   for i in range(0, WINDOW_WIDTH, BLOCK_SIZE):
@@ -51,7 +31,7 @@ class Wall:
     self.body = []
     self.load_wall()
   
-  def load_wall(self, level=0):
+  def load_wall(self, level=1):
     with open(f'level{level}.txt', 'r') as f:
       wall_body = f.readlines()
     
@@ -76,13 +56,12 @@ class Food:
     self.y = self.my_round(random.randint(0, WINDOW_HEIGHT - BLOCK_SIZE))
   
   def draw(self):
-    self.color = BLUE
-    pygame.draw.rect(screen, self.color, (self.x, self.y, BLOCK_SIZE, BLOCK_SIZE))
+    pygame.draw.rect(screen, BLUE, (self.x, self.y, BLOCK_SIZE, BLOCK_SIZE))
 
 
 class Snake:
   def __init__(self):
-      self.body = [[10, 10], [11, 10]]
+      self.body = [[10, 10], [11, 10],]
       self.dx = 1
       self.dy = 0
   
@@ -103,93 +82,57 @@ class Snake:
 snake = Snake()
 food = Food()
 wall = Wall()
-
-last_key = ""
 score = 0
-level = 0
 
 while running:
   for event in pygame.event.get():
-    if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+    if event.type == pygame.QUIT:
       running = False
-      
     if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_RIGHT and last_key != "left":
-        last_key = "right"
+      if event.key == pygame.K_RIGHT:
         snake.dx = 1
         snake.dy = 0
-      if event.key == pygame.K_LEFT and last_key != "right":
-        last_key = "left"
+      if event.key == pygame.K_LEFT:
         snake.dx = -1
         snake.dy = 0
-      if event.key == pygame.K_UP and last_key != "down":
-        last_key = "up"
+      if event.key == pygame.K_UP:
         snake.dx = 0
         snake.dy = -1
-      if event.key == pygame.K_DOWN and last_key != "up":
-        last_key = "down"
+      if event.key == pygame.K_DOWN:
         snake.dx = 0
         snake.dy = 1
       if event.key == pygame.K_SPACE:
         pass        
   
   snake.move()    
+    
 
-  # ---------------------------------------
-  # these lines check boundaries
-  if snake.body[0][0] * BLOCK_SIZE > 500:
+  if snake.body[0][0] > 500:
       snake.body[0][0] = 0
-
-  if snake.body[0][1] * BLOCK_SIZE > 500:
+  if snake.body[0][1] > 500:
       snake.body[0][1] = 0
-  
   if snake.body[0][0] < 0:
-      snake.body[0][0] = 500/BLOCK_SIZE
-  
+      snake.body[0][0] = 500
   if snake.body[0][1] < 0:
-      snake.body[0][1] = 500/BLOCK_SIZE
-  
-  # --------------------------------------  
-
-  # Game Over-----------------------------  
-  for i in range(1, len(snake.body)):
-    if snake.body[i][0] == snake.body[0][0] and snake.body[i][1] == snake.body[0][1]:
-      game_over()
-      running = False
-  #--------------------------------------
-
+      snake.body[0][1] = 500
+      
   screen.fill(BLACK)
   
   draw_grid()
   snake.draw()
   food.draw()
   wall.draw()
-
-  # for x,y in wall.body:
-  #   if x * BLOCK_SIZE <= snake.dx <= x * BLOCK_SIZE + BLOCK_SIZE and y * BLOCK_SIZE <= snake.dy <= y * BLOCK_SIZE + BLOCK_SIZE:
-  #     pygame.quit()
-
-
   
   if snake.body[0][0] * BLOCK_SIZE == food.x and snake.body[0][1] * BLOCK_SIZE == food.y:
     snake.body.append([0, 0])
     food.generate_random_pos()
     score += 1
-    if score == 10:
-      level += 1
-      wall.load_wall(level)
-    if score == 20:
-      level += 1
-      wall.load_wall(level)
+    if score == 4:
+      wall.load_wall(level=2)
 
-    if score % 5 == 0:
-      food.generate_random_pos() 
-      food.color = RED 
-      food.draw() 
-      
-
-  font = pygame.font.SysFont("comicsansms", 20)
-  text = font.render(f'Score: {score} || Level: {lvl(level)} || FPS: {FPS}', True, YELLOW)
+  
+  font = pygame.font.Font(None, 30)
+  text = font.render(f'Score: {score}', True, (255, 0, 0))
   
   screen.blit(text, (20, 20))
   

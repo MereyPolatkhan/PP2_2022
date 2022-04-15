@@ -74,7 +74,7 @@ while run:
                 dy = block
     
 
-
+    # MOVE 
     for i in range(len(body) - 1, 0, -1):
         # print(i)
         body[i][0] = body[i - 1][0]
