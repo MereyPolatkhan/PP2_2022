@@ -8,6 +8,7 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 500, 500
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 running = True
 
+# COLORS
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 WHITE_2 = (100, 100, 100)
@@ -48,7 +49,7 @@ def draw_grid():
     for j in range(0, WINDOW_HEIGHT, BLOCK_SIZE):
       pygame.draw.rect(screen, WHITE_2, (i, j, BLOCK_SIZE, BLOCK_SIZE), 1)
 
-
+# WALL -----------------
 class Wall:
   def __init__(self):
     self.body = []
@@ -66,7 +67,8 @@ class Wall:
   def draw(self):
     for x, y in self.body:
       pygame.draw.rect(screen, RED, (x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
-    
+  
+# FOOD -------------
 class Food:
   def __init__(self):
       self.generate_random_pos_0lvl()
@@ -94,7 +96,7 @@ class Food:
     pygame.draw.rect(screen, self.color, (self.x, self.y, BLOCK_SIZE, BLOCK_SIZE))
 
 
-# SuperFood is the same Food class, diff between them is COLOR
+# SuperFood is the same Food class, diff between them is COLOR = YELLOW
 class SuperFood:
   def __init__(self):
       self.generate_random_pos_0lvl()
@@ -119,6 +121,7 @@ class SuperFood:
     pygame.draw.rect(screen, self.color, (self.x, self.y, BLOCK_SIZE, BLOCK_SIZE))
 
 
+# SNAKE ------------------
 class Snake:
   def __init__(self):
       self.body = [[10, 10], [11, 10]]
@@ -138,7 +141,7 @@ class Snake:
     self.body[0][0] += self.dx
     self.body[0][1] += self.dy
     
-
+# variables 
 snake = Snake()
 food = Food()
 wall = Wall()
@@ -149,6 +152,7 @@ score = 0
 level = 0
 timer = 0
 
+# main loop
 while running:
   for event in pygame.event.get():
     if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -179,7 +183,7 @@ while running:
   snake.move() 
 
 
-# timer for disappering food
+# Foods which are disappearing after some time(timer)
   timer += 1
   if timer == 30:
     if level == 0: superfood.generate_random_pos_0lvl()
@@ -250,11 +254,14 @@ while running:
     wall.load_wall(level)
 
 
-  if score >= 40:
+  if score >= 20 and score < 40:
     FPS = 15
     level = 2
     wall.load_wall(level)
 
+  if score >= 40:
+    FPS += 1
+  
   if score % 4 == 0:
     superfood.draw()
   # --------------------------------------------------
