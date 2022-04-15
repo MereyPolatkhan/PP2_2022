@@ -5,7 +5,7 @@ import time
 pygame.init()
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 500, 500
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # Surface
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 running = True
 
 BLACK = (0, 0, 0)
@@ -16,12 +16,12 @@ GREEN = (0, 150, 0)
 RED = (150, 0, 0)
 YELLOW = (255, 255, 0)
 
-
 BLOCK_SIZE = 20
 
 clock = pygame.time.Clock()
 FPS = 10
 
+# Game over func
 def game_over():
   time.sleep(0.5)
   screen.fill(YELLOW)
@@ -33,13 +33,16 @@ def game_over():
   text2 = font2.render(f'Score: {score} || Level: {lvl(level)}', True, GREEN)
   screen.blit(text2, (WINDOW_WIDTH // 2 - 150, WINDOW_HEIGHT // 2 - 150))
   pygame.display.update()
-  time.sleep(3)
+  time.sleep(2)
+  pygame.quit()
 
+# lvl() is converter 0 1 3 --> easy medium hard
 def lvl(n):
   if n == 0: return "Easy"
   elif n == 1: return "Medium"
   else: return "Hard"
 
+# Greed 
 def draw_grid():
   for i in range(0, WINDOW_WIDTH, BLOCK_SIZE):
     for j in range(0, WINDOW_HEIGHT, BLOCK_SIZE):
@@ -66,17 +69,53 @@ class Wall:
     
 class Food:
   def __init__(self):
-      self.generate_random_pos()
+      self.generate_random_pos_0lvl()
+  
+  def my_round(self, value, base=BLOCK_SIZE):
+    return base * round(value / base)
+
+  # for 0 lvl it have to generate random numbers between 0, 480
+  def generate_random_pos_0lvl(self):
+    self.x = self.my_round(random.randint(0, WINDOW_WIDTH - BLOCK_SIZE))
+    self.y = self.my_round(random.randint(0, WINDOW_HEIGHT - BLOCK_SIZE))
+
+  # for 1 lvl it have to generate random numbers between 60, 440
+  def generate_random_pos_1lvl(self):
+    self.x = self.my_round(random.randint(60, WINDOW_WIDTH - 40 - BLOCK_SIZE))
+    self.y = self.my_round(random.randint(60, WINDOW_HEIGHT - 40 - BLOCK_SIZE))
+
+  # for 2 lvl it have to generate random numbers between 100, 380
+  def generate_random_pos_2lvl(self):
+    self.x = self.my_round(random.randint(100, WINDOW_WIDTH - 100- BLOCK_SIZE))
+    self.y = self.my_round(random.randint(100, WINDOW_HEIGHT - 100 - BLOCK_SIZE))
+
+  def draw(self):
+    self.color = BLUE
+    pygame.draw.rect(screen, self.color, (self.x, self.y, BLOCK_SIZE, BLOCK_SIZE))
+
+
+# SuperFood is the same Food class, diff between them is COLOR
+class SuperFood:
+  def __init__(self):
+      self.generate_random_pos_0lvl()
   
   def my_round(self, value, base=BLOCK_SIZE):
     return base * round(value / base)
   
-  def generate_random_pos(self):
+  def generate_random_pos_0lvl(self):
     self.x = self.my_round(random.randint(0, WINDOW_WIDTH - BLOCK_SIZE))
     self.y = self.my_round(random.randint(0, WINDOW_HEIGHT - BLOCK_SIZE))
-  
+
+  def generate_random_pos_1lvl(self):
+    self.x = self.my_round(random.randint(60, WINDOW_WIDTH - 40 - BLOCK_SIZE))
+    self.y = self.my_round(random.randint(60, WINDOW_HEIGHT - 40 - BLOCK_SIZE))
+
+  def generate_random_pos_2lvl(self):
+    self.x = self.my_round(random.randint(100, WINDOW_WIDTH - 100- BLOCK_SIZE))
+    self.y = self.my_round(random.randint(100, WINDOW_HEIGHT - 100 - BLOCK_SIZE))
+
   def draw(self):
-    self.color = BLUE
+    self.color = YELLOW
     pygame.draw.rect(screen, self.color, (self.x, self.y, BLOCK_SIZE, BLOCK_SIZE))
 
 
@@ -85,7 +124,7 @@ class Snake:
       self.body = [[10, 10], [11, 10]]
       self.dx = 1
       self.dy = 0
-  
+      
   def draw(self):
     for i, (x, y) in enumerate(self.body):
       color = RED if i == 0 else GREEN
@@ -103,16 +142,19 @@ class Snake:
 snake = Snake()
 food = Food()
 wall = Wall()
+superfood = SuperFood()
 
 last_key = ""
 score = 0
 level = 0
+timer = 0
 
 while running:
   for event in pygame.event.get():
     if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
       running = False
-      
+
+# turns ----------------------------------      
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_RIGHT and last_key != "left":
         last_key = "right"
@@ -131,24 +173,35 @@ while running:
         snake.dx = 0
         snake.dy = 1
       if event.key == pygame.K_SPACE:
-        pass        
-  
-  snake.move()    
+        snake.body.append([0, 0])
+        score += 1
+# --------------------------------------------
+  snake.move() 
+
+
+# timer for disappering food
+  timer += 1
+  if timer == 30:
+    if level == 0: superfood.generate_random_pos_0lvl()
+    if level == 1: superfood.generate_random_pos_1lvl()
+    if level == 2: superfood.generate_random_pos_2lvl()
+    timer = 0
+#--------------------------
+
 
   # ---------------------------------------
   # these lines check boundaries
   if snake.body[0][0] * BLOCK_SIZE > 500:
-      snake.body[0][0] = 0
+      game_over()
 
   if snake.body[0][1] * BLOCK_SIZE > 500:
-      snake.body[0][1] = 0
+      game_over()
   
   if snake.body[0][0] < 0:
-      snake.body[0][0] = 500/BLOCK_SIZE
+      game_over()
   
   if snake.body[0][1] < 0:
-      snake.body[0][1] = 500/BLOCK_SIZE
-  
+      game_over()
   # --------------------------------------  
 
   # Game Over-----------------------------  
@@ -159,39 +212,58 @@ while running:
   #--------------------------------------
 
   screen.fill(BLACK)
-  
+  # draw --------------------------- 
   draw_grid()
   snake.draw()
   food.draw()
   wall.draw()
-
-  # for x,y in wall.body:
-  #   if x * BLOCK_SIZE <= snake.dx <= x * BLOCK_SIZE + BLOCK_SIZE and y * BLOCK_SIZE <= snake.dy <= y * BLOCK_SIZE + BLOCK_SIZE:
-  #     pygame.quit()
-
-
+  # --------------------------------
   
+  # if snake eates food --> 1 point ----------------
   if snake.body[0][0] * BLOCK_SIZE == food.x and snake.body[0][1] * BLOCK_SIZE == food.y:
     snake.body.append([0, 0])
-    food.generate_random_pos()
+
+    if level == 0: food.generate_random_pos_0lvl()
+    if level == 1: food.generate_random_pos_1lvl()
+    if level == 2: food.generate_random_pos_2lvl()
+
     score += 1
-    if score == 10:
-      level += 1
-      wall.load_wall(level)
-    if score == 20:
-      level += 1
-      wall.load_wall(level)
+  # -------------------------------
 
-    if score % 5 == 0:
-      food.generate_random_pos() 
-      food.color = RED 
-      food.draw() 
-      
+  # if snake eates superfood --> 3 point ------------
 
+  if snake.body[0][0] * BLOCK_SIZE == superfood.x and snake.body[0][1] * BLOCK_SIZE == superfood.y:
+    snake.body.append([0, 0])
+
+    if level == 0: superfood.generate_random_pos_0lvl()
+    if level == 1: superfood.generate_random_pos_1lvl()
+    if level == 2: superfood.generate_random_pos_2lvl()
+
+    score += 3
+  #-------------------------------------------------
+  
+
+  # Managing with level, score, FPS..-------------------
+  if score >= 10 and score < 20:
+    FPS = 13
+    level = 1
+    wall.load_wall(level)
+
+
+  if score >= 40:
+    FPS = 15
+    level = 2
+    wall.load_wall(level)
+
+  if score % 4 == 0:
+    superfood.draw()
+  # --------------------------------------------------
+    
+
+# font to see Level, Score, FPS ---------------------
   font = pygame.font.SysFont("comicsansms", 20)
   text = font.render(f'Score: {score} || Level: {lvl(level)} || FPS: {FPS}', True, YELLOW)
-  
   screen.blit(text, (20, 20))
-  
+# --------------------------------------------------  
   pygame.display.update()
   clock.tick(FPS)
