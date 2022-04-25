@@ -86,8 +86,8 @@ update phonebooks
     where name = 'Merey Polatkhan';
 
 update phonebooks
-    set company = 'Apple'
-    where id = 2;
+    set name = 'Michael Jackson'
+    where company = 'Apple';
 
 update phonebooks
     set company = '87775557755'
