@@ -6,7 +6,7 @@ conn = psycopg2.connect(
     host="localhost",
     database="postgres",
     user="postgres",
-    password="mikomlko178789",
+    password="_",
 )
 
 sql = "select * from phonebooks" 
