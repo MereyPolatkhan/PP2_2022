@@ -1,7 +1,7 @@
 import pygame
 import random
 import time
-import _db as db
+# import database as db
 
 
 pygame.init()
@@ -129,15 +129,13 @@ level = 0
 
 # Game over func
 def game_over():
-  global score, level
-
-  sql = ""
-  if db.acc == "yes":
-    sql = f"update snake_game set user_score = {score} where username = '{db.username_yes}'; update snake_game set user_level = '{lvl(level)}' where username = '{db.username_yes}';"
-  if db.acc == "no":
-    sql = f"update snake_game set user_score = {score} where username = '{db.username_no}'; update snake_game set user_level = '{lvl(level)}' where username = '{db.username_no}';"
-  db.cursor.execute(sql)
-  db.conn.commit()
+  # sql = ""
+  # if db.acc == "yes":
+  #   sql = f"update snake_game set user_score = {score} where username = '{db.username_yes}'; update snake_game set user_level = '{lvl(level)}' where username = '{db.username_yes}';"
+  # if db.acc == "no":
+  #   sql = f"update snake_game set user_score = {score} where username = '{db.username_no}'; update snake_game set user_level = '{lvl(level)}' where username = '{db.username_no}';"
+  # db.cursor.execute(sql)
+  # db.conn.commit()
 
   time.sleep(0.5)
   screen.fill(YELLOW)
@@ -153,8 +151,8 @@ def game_over():
   pygame.quit()
 
 
-def main():
 
+def main():
   # variables 
   snake = Snake()
   food = Food()
@@ -169,7 +167,7 @@ def main():
   FPS = 5
 
   running = True
-  # main loop
+    # main loop
   while running:
     for event in pygame.event.get():
       if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -266,7 +264,7 @@ def main():
 
     # Managing with level, score, FPS..-------------------
     if score >= 10 and score < 20:
-      FPS = 13
+      FPS = 10
       level = 1
       wall.load_wall(level)
 
@@ -276,8 +274,8 @@ def main():
       level = 2
       wall.load_wall(level)
 
-    if score >= 40:
-      FPS += 1
+    if score < 70 and score >= 40:
+      FPS = 20
     
     if score % 4 == 0:
       superfood.draw()
@@ -291,6 +289,5 @@ def main():
   # --------------------------------------------------  
     pygame.display.update()
     clock.tick(FPS)
-
 
 main()

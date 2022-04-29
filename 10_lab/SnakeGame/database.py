@@ -1,12 +1,12 @@
 import sys
 import psycopg2
-import _snake as snake
+# import snake as s
 
 conn = psycopg2.connect(
     host="localhost",
     database="postgres",
     user="postgres",
-    password="_",
+    password="-",
 )
 
 cursor = conn.cursor()
@@ -28,7 +28,7 @@ def sign_in(user, psw):
     
     for value in values:
         if value[1] + value[-1] == user + psw:
-            print("\nWelcome!\n Info: ")
+            print("\nWelcome!\nInfo: ")
             print(f'Your ID: {value[0]}, score: {value[2]}, level: {value[3]}\n')
             play = input('Please write "play" to continue, if not press any button: ')
             if play == 'play':
@@ -62,7 +62,8 @@ if acc == 'no':
 
 
 if flag == True:
-    snake.main()
+    # s.main() 
+    pass
 else:
     print(flag)
     
