@@ -8,7 +8,7 @@ conn = psycopg2.connect(
     host="localhost",
     database="postgres",
     user="postgres",
-    password="-",
+    password="_",
 )
 
 cursor = conn.cursor()
@@ -24,8 +24,8 @@ def sign_in(user, psw):
     
     for value in values:
         if value[1] + value[-1] == user + psw:
-            print("\nWelcome!\nInfo: ")
-            print(f'Your ID: {value[0]}, score: {value[2]}, level: {value[3]}\n')
+            print("\nWelcome to the game !\nInfo: ")
+            print(f'\n\tYour ID: {value[0]} \n\tScore: {value[2]} \n\tLevel: {value[3]}\n')
             play = input('Please write "play" to continue, if not press any button: ')
             if play == 'play':
                 global flag
@@ -86,6 +86,7 @@ def draw_grid():
   for i in range(0, WINDOW_WIDTH, BLOCK_SIZE):
     for j in range(0, WINDOW_HEIGHT, BLOCK_SIZE):
       pygame.draw.rect(screen, WHITE_2, (i, j, BLOCK_SIZE, BLOCK_SIZE), 1)
+
 
 # WALL -----------------
 class Wall:
@@ -182,24 +183,22 @@ class Snake:
 score = 0
 level = 0
 
+def sql_query():
+  sql = ""
+  if acc == "yes":
+    sql = f"update snake_game set user_score = {score} where username = '{username_yes}'; update snake_game set user_level = '{lvl(level)}' where username = '{username_yes}';"
+  if acc == "no":
+    sql = f"update snake_game set user_score = {score} where username = '{username_no}'; update snake_game set user_level = '{lvl(level)}' where username = '{username_no}';"
+  cursor.execute(sql)
+  conn.commit()
+
 
 def game_pause():
-  sql = ""
-  if acc == "yes":
-    sql = f"update snake_game set user_score = {score} where username = '{username_yes}'; update snake_game set user_level = '{lvl(level)}' where username = '{username_yes}';"
-  if acc == "no":
-    sql = f"update snake_game set user_score = {score} where username = '{username_no}'; update snake_game set user_level = '{lvl(level)}' where username = '{username_no}';"
-  cursor.execute(sql)
-  conn.commit()
+  sql_query()
+
 
 def game_over():
-  sql = ""
-  if acc == "yes":
-    sql = f"update snake_game set user_score = {score} where username = '{username_yes}'; update snake_game set user_level = '{lvl(level)}' where username = '{username_yes}';"
-  if acc == "no":
-    sql = f"update snake_game set user_score = {score} where username = '{username_no}'; update snake_game set user_level = '{lvl(level)}' where username = '{username_no}';"
-  cursor.execute(sql)
-  conn.commit()
+  sql_query()
 
   time.sleep(0.5)
   screen.fill(YELLOW)
@@ -225,7 +224,8 @@ superfood = SuperFood()
 
 last_key = ""
 
-timer = 0
+timer_sf = 0
+timer_f = 0
 
 clock = pygame.time.Clock()
 FPS = 5
@@ -257,19 +257,26 @@ while flag:
           snake.dy = 1
         if event.key == pygame.K_SPACE:
             stop_button += 1
-            print(stop_button)
+            # print(stop_button)
             game_pause()
   # --------------------------------------------
     if stop_button % 2 == 0:
         snake.move() 
 
   # Foods which are disappearing after some time(timer)
-    timer += 1
-    if timer == 30:
+    timer_sf += 1
+    if timer_sf == 30:
       if level == 0: superfood.generate_random_pos_0lvl()
       if level == 1: superfood.generate_random_pos_1lvl()
       if level == 2: superfood.generate_random_pos_2lvl()
-      timer = 0
+      timer_sf = 0
+
+    timer_f += 1
+    if timer_f == 45:
+      if level == 0: food.generate_random_pos_0lvl()
+      if level == 1: food.generate_random_pos_1lvl()
+      if level == 2: food.generate_random_pos_2lvl()
+      timer_f = 0
   #--------------------------
 
 
